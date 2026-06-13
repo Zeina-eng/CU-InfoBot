@@ -1,0 +1,10 @@
+venv/
+venv311/
+cuclean/
+cubot/
+
+vector_db/
+
+.env
+__pycache__/
+*.pyc
