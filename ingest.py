@@ -1,10 +1,23 @@
 import os
+import shutil
 
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
+# ---------------------------
+# Clean text function
+# ---------------------------
 
+def clean_text(text):
+
+    text = text.replace("\n", " ")
+
+    text = text.replace("\t", " ")
+
+    text = " ".join(text.split())
+
+    return text
 
 # ---------------------------
 # Load all PDFs
@@ -28,15 +41,29 @@ for root, dirs, files in os.walk(documents_folder):
 
             docs = loader.load()
 
-            # Add metadata
+            # Folder name becomes category
             category = os.path.basename(root)
 
+            # Process every page
             for doc in docs:
+
+                # Clean text
+                doc.page_content = clean_text(
+                    doc.page_content
+                )
+
+                # Metadata
+                doc.metadata["document_name"] = file
 
                 doc.metadata["source"] = file
 
                 doc.metadata["category"] = category
 
+                doc.metadata["department"] = "General"
+
+                doc.metadata["date"] = "Not Available"
+
+            # Add to all documents
             all_docs.extend(docs)
 
 print(f"\nTotal Pages Loaded: {len(all_docs)}")
@@ -78,8 +105,6 @@ print("\nCreating embeddings and FAISS index...")
 
 if os.path.exists("vector_db"):
 
-    import shutil
-
     shutil.rmtree("vector_db")
 
 
@@ -101,6 +126,7 @@ db = FAISS.from_documents(
 # ---------------------------
 
 db.save_local("vector_db")
+
 
 print("\n✅ Vector Database Created Successfully!")
 

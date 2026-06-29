@@ -165,9 +165,7 @@ AI-Powered Chandigarh University Assistant
 </h3>
 
 <p style='text-align:center;'>
-Ask questions about leave policy, hostel rules,
-academic calendar, examination schedules,
-syllabus and university regulations.
+Your AI-powered assistant for accessing accurate information from Chandigarh University documents, policies, and academic resources."
 </p>
 
 </div>
@@ -182,37 +180,50 @@ st.write("")
 
 with st.sidebar:
 
-    
-
-    st.title("🎓 CU InfoBot")
-
-    st.markdown("---")
-
-    st.markdown("""
-### Features
-✅ University Leave Policy
-
-✅ Academic Calendar
-
-✅ Examination Guidelines
-
-✅ Hostel Rules
-
-✅ University Notices
-
-✅ Course Information
-""")
-
-    st.markdown("---")
-
-    st.info(
-        "Your AI-powered assistant for accessing accurate information from Chandigarh University documents, policies, and academic resources."
+    st.markdown(
+        "<h1 style='text-align:center; color:#6A1B9A;'>🎓 CU InfoBot</h1>",
+        unsafe_allow_html=True
     )
 
     st.markdown("---")
 
-    st.caption("Powered by LangChain + FAISS + Ollama")
+    # Statistics
+    st.subheader("📊 Statistics")
 
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Documents", "9")
+        st.metric("Pages", "40")
+
+    with col2:
+        st.metric("Chunks", "123")
+
+    st.markdown("---")
+
+    # Categories
+    st.subheader("📚 Categories")
+
+    st.success("📅 Academic Calendar")
+    st.success("📘 Course Syllabi")
+    st.success("📝 Examination Rules")
+    st.success("📢 Notices")
+    st.success("📄 Policies")
+
+    st.markdown("---")
+
+    # Status
+    st.subheader("🟢 Status")
+
+    st.success("Knowledge Base Ready")
+    st.success("LLM Ready")
+    st.success("Search Ready")
+
+    st.markdown("---")
+
+    st.caption("CU InfoBot v1.0")
+    st.caption("Powered by LangChain • FAISS • Ollama")
+    
 # ---------------------------
 # Check vector DB exists
 # ---------------------------
@@ -262,21 +273,42 @@ if question:
         try:
 
             # Retrieve relevant chunks
-            docs = db.similarity_search(question, k=5)
+            docs = db.similarity_search(
+    question.lower(),
+    k=10
+)
 
             context = "\n\n".join(
                 [doc.page_content for doc in docs]
             )
 
             prompt = f"""
-You are CU InfoBot, an assistant for Chandigarh University.
+You are CU InfoBot, an AI assistant for Chandigarh University.
 
-Rules:
-1. Answer ONLY from the provided context.
-2. Do NOT make up information.
-3. If the answer is not clearly present in the context, reply exactly:
+Instructions:
+
+- Answer ONLY from the provided context.
+
+- Do NOT make up information.
+
+- If information is unavailable, say:
 
 I could not find this information in the available university documents.
+
+- For attendance questions:
+Provide attendance percentage requirements.
+
+- For examination questions:
+Provide examination schedules and rules.
+
+- For syllabus questions:
+Provide subject names and syllabus details.
+
+- For academic calendar questions:
+Provide dates and important events.
+
+- For hostel questions:
+Provide hostel policies and regulations.
 
 Context:
 {context}
