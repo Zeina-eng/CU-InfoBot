@@ -5,7 +5,7 @@ import base64
 from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_ollama import OllamaLLM
+from langchain_groq import ChatGroq
 
 # ---------------------------
 # Load environment variables
@@ -222,7 +222,7 @@ with st.sidebar:
     st.markdown("---")
 
     st.caption("CU InfoBot v1.0")
-    st.caption("Powered by LangChain • FAISS • Ollama")
+    st.caption("Powered by LangChain • FAISS • Groq")
     
 # ---------------------------
 # Check vector DB exists
@@ -250,8 +250,9 @@ db = FAISS.load_local(
 # ---------------------------
 # Load Ollama model
 # ---------------------------
-llm = OllamaLLM(
-    model="qwen2.5:1.5b"
+llm = ChatGroq(
+    model="llama-3.1-8b-instant",
+    temperature=0
 )
 
 # ---------------------------
@@ -274,24 +275,24 @@ if question:
 
             # Retrieve relevant chunks
             docs = db.similarity_search(
-    question.lower(),
-    k=10
-)
+                question.lower(),
+                k=10
+            )
 
+            # Build context
             context = "\n\n".join(
                 [doc.page_content for doc in docs]
             )
 
+            # Prompt
             prompt = f"""
 You are CU InfoBot, an AI assistant for Chandigarh University.
 
 Instructions:
 
 - Answer ONLY from the provided context.
-
 - Do NOT make up information.
-
-- If information is unavailable, say:
+- If information is unavailable, reply exactly:
 
 I could not find this information in the available university documents.
 
@@ -319,7 +320,9 @@ Question:
 Answer:
 """
 
-            answer = llm.invoke(prompt)
+            # Generate answer
+            response = llm.invoke(prompt)
+            answer = response.content
 
             # ---------------------------
             # Show Answer
@@ -328,7 +331,7 @@ Answer:
             st.subheader("Answer")
 
             st.markdown(
-f"""
+                f"""
 <div class="answer-box">
 
 <h4>Answer</h4>
@@ -337,71 +340,48 @@ f"""
 
 </div>
 """,
-unsafe_allow_html=True
+                unsafe_allow_html=True,
             )
 
             # ---------------------------
-            # Show retrieved chunks
+            # Retrieved Chunks
             # ---------------------------
 
             with st.expander("📄 Retrieved Document Chunks"):
 
                 for i, doc in enumerate(docs, start=1):
 
-                    source = doc.metadata.get(
-                        "source",
-                        "Unknown"
-                    )
-
-                    category = doc.metadata.get(
-                        "category",
-                        "Unknown"
-                    )
-
-                    page = doc.metadata.get(
-                        "page",
-                        "N/A"
-                    )
+                    source = doc.metadata.get("source", "Unknown")
+                    category = doc.metadata.get("category", "Unknown")
+                    page = doc.metadata.get("page", "N/A")
 
                     st.markdown(
-f"""
-<div style="
-background:white;
-padding:20px;
-border-radius:15px;
-margin-bottom:20px;
-color:black !important;">
+                        f"""
+<div class="chunk-box">
 
-<h3 style="color:black;">Chunk {i}</h3>
+<h3>Chunk {i}</h3>
 
-<p style="color:black;">
-<b>📂 Category:</b> {category}
-</p>
+<p><b>📂 Category:</b> {category}</p>
 
-<p style="color:black;">
-<b>📄 Source:</b> {source}
-</p>
+<p><b>📄 Source:</b> {source}</p>
 
-<p style="color:black;">
-<b>📑 Page:</b> {page}
-</p>
+<p><b>📑 Page:</b> {page}</p>
 
 <hr>
 
-<p style="color:black;">
-{doc.page_content[:1000]}
-</p>
+<p>{doc.page_content[:1000]}</p>
 
 </div>
 """,
-unsafe_allow_html=True
-)
+                        unsafe_allow_html=True,
+                    )
 
         except Exception as e:
 
             st.error(f"Error: {e}")
-
             st.stop()
+
+            
 
 # ---------------------------
 # FOOTER
@@ -417,7 +397,7 @@ color:white;
 margin-top:20px;'>
 
 CU InfoBot © 2026<br>
-Built with Streamlit, LangChain, FAISS and Ollama
+Built with Streamlit, LangChain, FAISS and Groq
 
 </div>
 """,
