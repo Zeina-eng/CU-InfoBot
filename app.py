@@ -234,10 +234,13 @@ if not os.path.exists("vector_db"):
 # ---------------------------
 # Load embeddings model
 # ---------------------------
-embedding = HuggingFaceEmbeddings(
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
-)
+@st.cache_resource
+def load_embedding():
+    return HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
+embedding = load_embedding()
 # ---------------------------
 # Load FAISS database
 # ---------------------------
@@ -276,7 +279,7 @@ if question:
             # Retrieve relevant chunks
             docs = db.similarity_search(
                 question.lower(),
-                k=10
+                k=5
             )
 
             # Build context
