@@ -244,11 +244,15 @@ embedding = load_embedding()
 # ---------------------------
 # Load FAISS database
 # ---------------------------
-db = FAISS.load_local(
-    "vector_db",
-    embedding,
-    allow_dangerous_deserialization=True
-)
+@st.cache_resource
+def load_db():
+    return FAISS.load_local(
+        "vector_db",
+        embedding,
+        allow_dangerous_deserialization=True
+    )
+
+db = load_db()
 
 # ---------------------------
 # Load Ollama model
