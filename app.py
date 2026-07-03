@@ -180,49 +180,137 @@ st.write("")
 
 with st.sidebar:
 
-    st.markdown(
-        "<h1 style='text-align:center; color:#6A1B9A;'>🎓 CU InfoBot</h1>",
-        unsafe_allow_html=True
-    )
+    st.markdown("""
+    <style>
 
-    st.markdown("---")
+    /* Sidebar */
+    section[data-testid="stSidebar"]{
+        background:#ffffff;
+        border-right:1px solid #d9d9d9;
+    }
 
-    # Statistics
-    st.subheader("📊 Statistics")
+    /* Logo */
+    .logo{
+        font-size:30px;
+        font-weight:bold;
+        color:#162a72;
+        padding:15px 10px;
+    }
 
-    col1, col2 = st.columns(2)
+    /* Menu Items */
+    .menu-item{
+        padding:14px 18px;
+        font-size:17px;
+        border-bottom:1px solid #f1f1f1;
+        cursor:pointer;
+        transition:0.2s;
+    }
 
-    with col1:
-        st.metric("Documents", "9")
-        st.metric("Pages", "40")
+    .menu-item:hover{
+        background:#f2f4fa;
+    }
 
-    with col2:
-        st.metric("Chunks", "123")
+    /* Active item */
+    .active{
+        background:#162a72;
+        color:white;
+        font-weight:bold;
+        border-radius:3px;
+    }
 
-    st.markdown("---")
+    .arrow{
+        float:right;
+        font-weight:bold;
+    }
 
-    # Categories
-    st.subheader("📚 Categories")
+    .bottom-box{
+        margin-top:30px;
+        padding:15px;
+        border:1px solid #e5e5e5;
+        border-radius:10px;
+        background:white;
+    }
 
-    st.success("📅 Academic Calendar")
-    st.success("📘 Course Syllabi")
-    st.success("📝 Examination Rules")
-    st.success("📢 Notices")
-    st.success("📄 Policies")
+    </style>
 
-    st.markdown("---")
+    <div class="logo">
+    🎓 CU InfoBot
+    </div>
 
-    # Status
-    st.subheader("🟢 Status")
+    <div class="menu-item">
+    Academics <span class="arrow">›</span>
+    </div>
 
-    st.success("Knowledge Base Ready")
-    st.success("LLM Ready")
-    st.success("Search Ready")
+    <div class="menu-item active">
+    Accounts <span class="arrow">›</span>
+    </div>
 
-    st.markdown("---")
+    <div class="menu-item">
+    Administration <span class="arrow">›</span>
+    </div>
 
-    st.caption("CU InfoBot v1.0")
-    st.caption("Powered by LangChain • FAISS • Groq")
+    <div class="menu-item">
+    Admission Document Upload
+    </div>
+
+    <div class="menu-item">
+    Apply for Loan Documents
+    </div>
+
+    <div class="menu-item">
+    Apply for NOC
+    </div>
+
+    <div class="menu-item">
+    Centre For Student Wellbeing <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Counseling Therapy Clinic
+    </div>
+
+    <div class="menu-item">
+    DCPD <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    E Library <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Examination <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Hostel <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Placements <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Scholarships <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Student Services <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Transport <span class="arrow">›</span>
+    </div>
+
+    <div class="menu-item">
+    Other Important Links <span class="arrow">›</span>
+    </div>
+
+    <div class="bottom-box">
+    <b>🤖 CU InfoBot</b><br>
+    AI-Powered Assistant for Chandigarh University
+    </div>
+
+    """, unsafe_allow_html=True)
     
 # ---------------------------
 # Check vector DB exists
