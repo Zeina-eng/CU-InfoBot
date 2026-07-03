@@ -257,7 +257,10 @@ db = load_db()
 # ---------------------------
 # Load Ollama model
 # ---------------------------
+import streamlit as st
+
 llm = ChatGroq(
+    api_key=st.secrets["GROQ_API_KEY"],
     model="llama-3.1-8b-instant",
     temperature=0
 )
