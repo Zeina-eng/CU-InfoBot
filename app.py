@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
+from streamlit_option_menu import option_menu
 
 # ---------------------------
 # Load environment variables
@@ -180,137 +181,54 @@ st.write("")
 
 with st.sidebar:
 
-    st.markdown("""
-    <style>
+    selected_category = option_menu(
+        menu_title="🎓 CU InfoBot",
 
-    /* Sidebar */
-    section[data-testid="stSidebar"]{
-        background:#ffffff;
-        border-right:1px solid #d9d9d9;
-    }
+        options=[
+            "All Documents",
+            "Leave Policy",
+            "Hostel",
+            "Examination Rules",
+            "Academic Calendar",
+            "Course Syllabi",
+            "Notices"
+        ],
 
-    /* Logo */
-    .logo{
-        font-size:30px;
-        font-weight:bold;
-        color:#162a72;
-        padding:15px 10px;
-    }
+        icons=[
+            "collection",
+            "file-earmark-text",
+            "house-door",
+            "clipboard-check",
+            "calendar-event",
+            "book",
+            "megaphone"
+        ],
 
-    /* Menu Items */
-    .menu-item{
-        padding:14px 18px;
-        font-size:17px;
-        border-bottom:1px solid #f1f1f1;
-        cursor:pointer;
-        transition:0.2s;
-    }
+        default_index=0,
 
-    .menu-item:hover{
-        background:#f2f4fa;
-    }
+        styles={
+            "container": {
+                "padding": "5px",
+                "background-color": "#ffffff",
+            },
 
-    /* Active item */
-    .active{
-        background:#162a72;
-        color:white;
-        font-weight:bold;
-        border-radius:3px;
-    }
+            "icon": {
+                "color": "#162a72",
+                "font-size": "18px",
+            },
 
-    .arrow{
-        float:right;
-        font-weight:bold;
-    }
+            "nav-link": {
+                "font-size": "16px",
+                "text-align": "left",
+                "margin": "4px",
+                "--hover-color": "#f2f4fa",
+            },
 
-    .bottom-box{
-        margin-top:30px;
-        padding:15px;
-        border:1px solid #e5e5e5;
-        border-radius:10px;
-        background:white;
-    }
-
-    </style>
-
-    <div class="logo">
-    🎓 CU InfoBot
-    </div>
-
-    <div class="menu-item">
-    Academics <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item active">
-    Accounts <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Administration <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Admission Document Upload
-    </div>
-
-    <div class="menu-item">
-    Apply for Loan Documents
-    </div>
-
-    <div class="menu-item">
-    Apply for NOC
-    </div>
-
-    <div class="menu-item">
-    Centre For Student Wellbeing <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Counseling Therapy Clinic
-    </div>
-
-    <div class="menu-item">
-    DCPD <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    E Library <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Examination <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Hostel <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Placements <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Scholarships <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Student Services <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Transport <span class="arrow">›</span>
-    </div>
-
-    <div class="menu-item">
-    Other Important Links <span class="arrow">›</span>
-    </div>
-
-    <div class="bottom-box">
-    <b>🤖 CU InfoBot</b><br>
-    AI-Powered Assistant for Chandigarh University
-    </div>
-
-    """, unsafe_allow_html=True)
+            "nav-link-selected": {
+                "background-color": "#162a72",
+            },
+        },
+    )
     
 # ---------------------------
 # Check vector DB exists
@@ -371,17 +289,76 @@ if question:
 
         try:
 
+            # ---------------------------
             # Retrieve relevant chunks
-            docs = db.similarity_search(
-                question.lower(),
-                k=5
-            )
+            # ---------------------------
 
+            if selected_category == "All Documents":
+
+                docs = db.similarity_search(
+                    question,
+                    k=10
+                )
+
+            else:
+
+                docs = db.similarity_search(
+                    f"{selected_category} {question}",
+                    k=10
+                )
+
+            # ---------------------------
             # Build context
+            # ---------------------------
+
             context = "\n\n".join(
                 [doc.page_content for doc in docs]
             )
 
+            prompt = f"""
+You are CU InfoBot, an AI assistant for Chandigarh University.
+
+Instructions:
+
+- Answer ONLY from the provided context.
+- Do NOT make up information.
+- If the answer is unavailable, say:
+"I could not find this information in the available university documents."
+
+Context:
+{context}
+
+Question:
+{question}
+
+Answer:
+"""
+
+            response = llm.invoke(prompt)
+            answer = response.content
+
+            # ---------------------------
+            # Show Answer
+            # ---------------------------
+
+            st.subheader("Answer")
+
+            st.markdown(
+                f"""
+<div class="answer-box">
+
+<h4>Answer</h4>
+
+{answer}
+
+</div>
+""",
+                unsafe_allow_html=True
+            )
+
+        except Exception as e:
+
+            st.error(f"Error: {e}")
             # Prompt
             prompt = f"""
 You are CU InfoBot, an AI assistant for Chandigarh University.
