@@ -179,13 +179,14 @@ st.write("")
 # SIDEBAR
 # ---------------------------
 
+
 with st.sidebar:
 
     selected_category = option_menu(
-        menu_title="🎓 CU InfoBot",
 
-        options=[
-            "All Documents",
+        "📂 Browse Documents",
+
+        [
             "Leave Policy",
             "Hostel",
             "Examination Rules",
@@ -195,41 +196,17 @@ with st.sidebar:
         ],
 
         icons=[
-            "collection",
             "file-earmark-text",
-            "house-door",
+            "house",
             "clipboard-check",
             "calendar-event",
             "book",
             "megaphone"
         ],
 
-        default_index=0,
-
-        styles={
-            "container": {
-                "padding": "5px",
-                "background-color": "#ffffff",
-            },
-
-            "icon": {
-                "color": "#162a72",
-                "font-size": "18px",
-            },
-
-            "nav-link": {
-                "font-size": "16px",
-                "text-align": "left",
-                "margin": "4px",
-                "--hover-color": "#f2f4fa",
-            },
-
-            "nav-link-selected": {
-                "background-color": "#162a72",
-            },
-        },
+        default_index=0
     )
-    
+    st.header("📂 Browse University Documents")
 # ---------------------------
 # Check vector DB exists
 # ---------------------------
@@ -259,6 +236,79 @@ def load_db():
     )
 
 db = load_db()
+# ---------------------------
+# Show documents by category
+# ---------------------------
+
+category_mapping = {
+    "Leave Policy": "Leave Policy",
+    "Hostel": "Hostel",
+    "Examination Rules": "Examination",
+    "Academic Calendar": "Academic Calendar",
+    "Course Syllabi": "Syllabus",
+    "Notices": "Notice"
+}
+
+selected_metadata = category_mapping.get(selected_category)
+
+st.sidebar.markdown("---")
+
+category_docs = db.similarity_search(
+    selected_metadata,
+    k=5
+)
+
+st.subheader(f"📂 {selected_category}")
+
+for i, doc in enumerate(category_docs, 1):
+
+    source = doc.metadata.get("source", "Unknown")
+    page = doc.metadata.get("page", "N/A")
+    category = doc.metadata.get("category", "Unknown")
+
+    st.markdown(
+        f"""
+<div class="chunk-box">
+
+<h3>Chunk {i}</h3>
+
+<p><b>Category:</b> {category}</p>
+
+<p><b>Source:</b> {source}</p>
+
+<p><b>Page:</b> {page}</p>
+
+<hr>
+
+{doc.page_content}
+
+</div>
+""",
+        unsafe_allow_html=True
+    )
+
+        source = doc.metadata.get("source", "Unknown")
+        page = doc.metadata.get("page", "N/A")
+        category = doc.metadata.get("category", "Unknown")
+
+        st.markdown(
+            f"""
+<div class="chunk-box">
+
+<h3>Chunk {i}</h3>
+
+<p><b>Category:</b> {category}</p>
+<p><b>Source:</b> {source}</p>
+<p><b>Page:</b> {page}</p>
+
+<hr>
+
+{doc.page_content}
+
+</div>
+""",
+            unsafe_allow_html=True
+        )
 
 # ---------------------------
 # Load Ollama model
@@ -281,8 +331,6 @@ question = st.text_input(
 # ---------------------------
 # Process question
 # ---------------------------
-
-
 if question:
 
     with st.spinner("Searching documents..."):
@@ -292,100 +340,35 @@ if question:
             # ---------------------------
             # Retrieve relevant chunks
             # ---------------------------
-
-            if selected_category == "All Documents":
-
-                docs = db.similarity_search(
-                    question,
-                    k=10
-                )
-
-            else:
-
-                docs = db.similarity_search(
-                    f"{selected_category} {question}",
-                    k=10
-                )
+            question_docs = db.similarity_search(...)
+                question,
+                k=5,
+                filter={
+                    "category": category_mapping[selected_category]
+                }
+            )
 
             # ---------------------------
             # Build context
             # ---------------------------
-
             context = "\n\n".join(
-                [doc.page_content for doc in docs]
-            )
+    [doc.page_content for doc in question_docs]
+)
 
-            prompt = f"""
+            
+# Prompt
+# ---------------------------
+prompt = f"""
 You are CU InfoBot, an AI assistant for Chandigarh University.
 
 Instructions:
 
 - Answer ONLY from the provided context.
 - Do NOT make up information.
-- If the answer is unavailable, say:
-"I could not find this information in the available university documents."
-
-Context:
-{context}
-
-Question:
-{question}
-
-Answer:
-"""
-
-            response = llm.invoke(prompt)
-            answer = response.content
-
-            # ---------------------------
-            # Show Answer
-            # ---------------------------
-
-            st.subheader("Answer")
-
-            st.markdown(
-                f"""
-<div class="answer-box">
-
-<h4>Answer</h4>
-
-{answer}
-
-</div>
-""",
-                unsafe_allow_html=True
-            )
-
-        except Exception as e:
-
-            st.error(f"Error: {e}")
-            # Prompt
-            prompt = f"""
-You are CU InfoBot, an AI assistant for Chandigarh University.
-
-Instructions:
-
-- Answer ONLY from the provided context.
-- Do NOT make up information.
-- If information is unavailable, reply exactly:
+- If the answer is unavailable, reply exactly:
 
 I could not find this information in the available university documents.
 
-- For attendance questions:
-Provide attendance percentage requirements.
-
-- For examination questions:
-Provide examination schedules and rules.
-
-- For syllabus questions:
-Provide subject names and syllabus details.
-
-- For academic calendar questions:
-Provide dates and important events.
-
-- For hostel questions:
-Provide hostel policies and regulations.
-
 Context:
 {context}
 
@@ -395,36 +378,36 @@ Question:
 Answer:
 """
 
-            # Generate answer
-            response = llm.invoke(prompt)
-            answer = response.content
+# ---------------------------
+# Generate answer
+# ---------------------------
+response = llm.invoke(prompt)
+answer = response.content
 
-            # ---------------------------
-            # Show Answer
-            # ---------------------------
+# ---------------------------
+# Show Answer
+# ---------------------------
+st.subheader("Answer")
 
-            st.subheader("Answer")
-
-            st.markdown(
-                f"""
+st.markdown(
+    f"""
 <div class="answer-box">
 
 <h4>Answer</h4>
 
-{answer}
+<p>{answer}</p>
 
 </div>
 """,
-                unsafe_allow_html=True,
-            )
+    unsafe_allow_html=True,
+)
 
+
+            # Retrieved Chunks Used for Answer
             # ---------------------------
-            # Retrieved Chunks
-            # ---------------------------
+            with st.expander("📄 Retrieved Chunks Used for This Answer", expanded=True):
 
-            with st.expander("📄 Retrieved Document Chunks"):
-
-                for i, doc in enumerate(docs, start=1):
+                for i, doc in enumerate(question_docs, start=1):
 
                     source = doc.metadata.get("source", "Unknown")
                     category = doc.metadata.get("category", "Unknown")
@@ -444,7 +427,7 @@ Answer:
 
 <hr>
 
-<p>{doc.page_content[:1000]}</p>
+<p>{doc.page_content}</p>
 
 </div>
 """,
@@ -455,9 +438,6 @@ Answer:
 
             st.error(f"Error: {e}")
             st.stop()
-
-            
-
 # ---------------------------
 # FOOTER
 # ---------------------------
