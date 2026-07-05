@@ -337,28 +337,28 @@ if question:
 
         try:
 
-            # ---------------------------
-            # Retrieve relevant chunks
-            # ---------------------------
-            question_docs = db.similarity_search(...)
-                question,
-                k=5,
-                filter={
-                    "category": category_mapping[selected_category]
-                }
-            )
+    # ---------------------------
+    # Retrieve relevant chunks
+    # ---------------------------
+    question_docs = db.similarity_search(
+        question,
+        k=5,
+        filter={
+            "category": category_mapping[selected_category]
+        }
+    )
 
-            # ---------------------------
-            # Build context
-            # ---------------------------
-            context = "\n\n".join(
-    [doc.page_content for doc in question_docs]
-)
+    # ---------------------------
+    # Build context
+    # ---------------------------
+    context = "\n\n".join(
+        [doc.page_content for doc in question_docs]
+    )
 
-            
-# Prompt
-# ---------------------------
-prompt = f"""
+    # ---------------------------
+    # Prompt
+    # ---------------------------
+    prompt = f"""
 You are CU InfoBot, an AI assistant for Chandigarh University.
 
 Instructions:
@@ -378,19 +378,19 @@ Question:
 Answer:
 """
 
-# ---------------------------
-# Generate answer
-# ---------------------------
-response = llm.invoke(prompt)
-answer = response.content
+    # ---------------------------
+    # Generate answer
+    # ---------------------------
+    response = llm.invoke(prompt)
+    answer = response.content
 
-# ---------------------------
-# Show Answer
-# ---------------------------
-st.subheader("Answer")
+    # ---------------------------
+    # Show Answer
+    # ---------------------------
+    st.subheader("Answer")
 
-st.markdown(
-    f"""
+    st.markdown(
+        f"""
 <div class="answer-box">
 
 <h4>Answer</h4>
@@ -399,22 +399,22 @@ st.markdown(
 
 </div>
 """,
-    unsafe_allow_html=True,
-)
+        unsafe_allow_html=True,
+    )
 
+    # ---------------------------
+    # Retrieved Chunks
+    # ---------------------------
+    with st.expander("📄 Retrieved Chunks Used for This Answer", expanded=True):
 
-            # Retrieved Chunks Used for Answer
-            # ---------------------------
-            with st.expander("📄 Retrieved Chunks Used for This Answer", expanded=True):
+        for i, doc in enumerate(question_docs, start=1):
 
-                for i, doc in enumerate(question_docs, start=1):
+            source = doc.metadata.get("source", "Unknown")
+            category = doc.metadata.get("category", "Unknown")
+            page = doc.metadata.get("page", "N/A")
 
-                    source = doc.metadata.get("source", "Unknown")
-                    category = doc.metadata.get("category", "Unknown")
-                    page = doc.metadata.get("page", "N/A")
-
-                    st.markdown(
-                        f"""
+            st.markdown(
+                f"""
 <div class="chunk-box">
 
 <h3>Chunk {i}</h3>
@@ -431,13 +431,15 @@ st.markdown(
 
 </div>
 """,
-                        unsafe_allow_html=True,
-                    )
+                unsafe_allow_html=True,
+            )
 
-        except Exception as e:
+except Exception as e:
 
-            st.error(f"Error: {e}")
-            st.stop()
+    st.error(f"Error: {e}")
+    st.stop()
+
+
 # ---------------------------
 # FOOTER
 # ---------------------------
