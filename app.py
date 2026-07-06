@@ -208,48 +208,75 @@ def load_db():
 
 db = load_db()
 
-# ---------------------------
-# Sidebar Document Library
-# ---------------------------
+# -------------------------------------------------
+# Sidebar - Document Browser (Independent)
+# -------------------------------------------------
 
 with st.sidebar:
 
     st.title("📚 University Documents")
 
-    pdf_files = {
-        " Leave Policy": "documents/Leave Policy.pdf",
-        " Hostel": "documents/Hostel.pdf",
-        " Examination Rules": "documents/Examination Rules.pdf",
-        " Academic Calendar": "documents/Academic Calendar.pdf",
-        " Course Syllabi": "documents/Course Syllabi.pdf",
-        " Notices": "documents/Notices.pdf",
-    }
-
-    selected_pdf = st.radio(
+    selected_category = option_menu(
         "Browse Documents",
-        list(pdf_files.keys())
+        [
+            "Leave Policy",
+            "Hostel",
+            "Examination Rules",
+            "Academic Calendar",
+            "Course Syllabi",
+            "Notices"
+        ],
+        icons=[
+            "file-earmark-text",
+            "house",
+            "clipboard-check",
+            "calendar-event",
+            "book",
+            "megaphone"
+        ],
+        default_index=0
     )
 
-    if selected_pdf:
+# -------------------------------------------------
+# Show selected document (Independent of chatbot)
+# -------------------------------------------------
 
-        pdf_path = pdf_files[selected_pdf]
+st.markdown("---")
+st.subheader(f"📄 {selected_category}")
 
-        with open(pdf_path, "rb") as pdf_file:
-            pdf_bytes = pdf_file.read()
+category_docs = db.similarity_search(
+    selected_category,
+    k=5
+)
 
-        st.download_button(
-            label="📥 Open / Download PDF",
-            data=pdf_bytes,
-            file_name=os.path.basename(pdf_path),
-            mime="application/pdf"
+with st.expander("📚 Document Chunks", expanded=False):
+
+    for i, doc in enumerate(category_docs, start=1):
+
+        source = doc.metadata.get("source", "Unknown")
+        page = doc.metadata.get("page", "N/A")
+        category = doc.metadata.get("category", "Unknown")
+
+        st.markdown(
+            f"""
+<div class="chunk-box">
+
+<h3>Chunk {i}</h3>
+
+<p><b>Category:</b> {category}</p>
+
+<p><b>Source:</b> {source}</p>
+
+<p><b>Page:</b> {page}</p>
+
+<hr>
+
+<p>{doc.page_content}</p>
+
+</div>
+""",
+            unsafe_allow_html=True
         )
-
-
-
-# ---------------------------
-# Load Ollama model
-# ---------------------------
-import streamlit as st
 
 llm = ChatGroq(
     api_key=st.secrets["GROQ_API_KEY"],
