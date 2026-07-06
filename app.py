@@ -263,9 +263,11 @@ You are CU InfoBot, an AI assistant for Chandigarh University.
 
 Instructions:
 
-- Answer ONLY from the provided context.
-- Do NOT make up information.
-- If the answer cannot be found, reply exactly:
+- Answer ONLY using the provided context.
+- If multiple retrieved chunks are available, combine them into one complete answer.
+- Prefer chunks that directly answer the user's question.
+- Do not answer from general knowledge.
+- If the answer is not found, reply exactly:
 
 I could not find this information in the available university documents.
 
@@ -276,9 +278,7 @@ Question:
 {question}
 
 Answer:
-"""
-
-            # ---------------------------
+"""       # ---------------------------
             # Generate answer
             # ---------------------------
             response = llm.invoke(prompt)
