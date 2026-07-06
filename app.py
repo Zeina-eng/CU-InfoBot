@@ -211,73 +211,7 @@ db = load_db()
 # Show documents by category
 # ---------------------------
 
-category_mapping = {
-    "Leave Policy": "Leave Policy",
-    "Hostel": "Hostel",
-    "Examination Rules": "Examination",
-    "Academic Calendar": "Academic Calendar",
-    "Course Syllabi": "Syllabus",
-    "Notices": "Notice"
-}
 
-
-st.sidebar.markdown("---")
-
-    selected_metadata,
-    k=5
-)
-
-st.subheader(f"📂 {selected_category}")
-
-for i, doc in enumerate(category_docs, 1):
-
-    source = doc.metadata.get("source", "Unknown")
-    page = doc.metadata.get("page", "N/A")
-    category = doc.metadata.get("category", "Unknown")
-
-    st.markdown(
-        f"""
-<div class="chunk-box">
-
-<h3>Chunk {i}</h3>
-
-<p><b>Category:</b> {category}</p>
-
-<p><b>Source:</b> {source}</p>
-
-<p><b>Page:</b> {page}</p>
-
-<hr>
-
-{doc.page_content}
-
-</div>
-""",
-        unsafe_allow_html=True
-    )
-
-        source = doc.metadata.get("source", "Unknown")
-        page = doc.metadata.get("page", "N/A")
-        category = doc.metadata.get("category", "Unknown")
-
-        st.markdown(
-            f"""
-<div class="chunk-box">
-
-<h3>Chunk {i}</h3>
-
-<p><b>Category:</b> {category}</p>
-<p><b>Source:</b> {source}</p>
-<p><b>Page:</b> {page}</p>
-
-<hr>
-
-{doc.page_content}
-
-</div>
-""",
-            unsafe_allow_html=True
-        )
 
 # ---------------------------
 # Load Ollama model
