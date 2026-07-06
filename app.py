@@ -207,9 +207,42 @@ def load_db():
     )
 
 db = load_db()
+
 # ---------------------------
-# Show documents by category
+# Sidebar Document Library
 # ---------------------------
+
+with st.sidebar:
+
+    st.title("📚 University Documents")
+
+    pdf_files = {
+        " Leave Policy": "documents/Leave Policy.pdf",
+        " Hostel": "documents/Hostel.pdf",
+        " Examination Rules": "documents/Examination Rules.pdf",
+        " Academic Calendar": "documents/Academic Calendar.pdf",
+        " Course Syllabi": "documents/Course Syllabi.pdf",
+        " Notices": "documents/Notices.pdf",
+    }
+
+    selected_pdf = st.radio(
+        "Browse Documents",
+        list(pdf_files.keys())
+    )
+
+    if selected_pdf:
+
+        pdf_path = pdf_files[selected_pdf]
+
+        with open(pdf_path, "rb") as pdf_file:
+            pdf_bytes = pdf_file.read()
+
+        st.download_button(
+            label="📥 Open / Download PDF",
+            data=pdf_bytes,
+            file_name=os.path.basename(pdf_path),
+            mime="application/pdf"
+        )
 
 
 
