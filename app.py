@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
-from streamlit_option_menu import option_menu
 
 # ---------------------------
 # Load environment variables
@@ -175,38 +174,10 @@ unsafe_allow_html=True
 )
 
 st.write("")
-# ---------------------------
-# SIDEBAR
-# ---------------------------
 
 
-with st.sidebar:
 
-    selected_category = option_menu(
 
-        "📂 Browse Documents",
-
-        [
-            "Leave Policy",
-            "Hostel",
-            "Examination Rules",
-            "Academic Calendar",
-            "Course Syllabi",
-            "Notices"
-        ],
-
-        icons=[
-            "file-earmark-text",
-            "house",
-            "clipboard-check",
-            "calendar-event",
-            "book",
-            "megaphone"
-        ],
-
-        default_index=0
-    )
-    st.header("📂 Browse University Documents")
 # ---------------------------
 # Check vector DB exists
 # ---------------------------
@@ -249,11 +220,9 @@ category_mapping = {
     "Notices": "Notice"
 }
 
-selected_metadata = category_mapping.get(selected_category)
 
 st.sidebar.markdown("---")
 
-category_docs = db.similarity_search(
     selected_metadata,
     k=5
 )
@@ -333,39 +302,36 @@ question = st.text_input(
 # ---------------------------
 if question:
 
-    with st.spinner("Searching documents..."):
+    with st.spinner("Searching university documents..."):
 
         try:
 
-    # ---------------------------
-    # Retrieve relevant chunks
-    # ---------------------------
-    question_docs = db.similarity_search(
-        question,
-        k=5,
-        filter={
-            "category": category_mapping[selected_category]
-        }
-    )
+            # ---------------------------
+            # Retrieve relevant chunks
+            # ---------------------------
+            question_docs = db.similarity_search(
+                question,
+                k=5
+            )
 
-    # ---------------------------
-    # Build context
-    # ---------------------------
-    context = "\n\n".join(
-        [doc.page_content for doc in question_docs]
-    )
+            # ---------------------------
+            # Build context
+            # ---------------------------
+            context = "\n\n".join(
+                [doc.page_content for doc in question_docs]
+            )
 
-    # ---------------------------
-    # Prompt
-    # ---------------------------
-    prompt = f"""
+            # ---------------------------
+            # Prompt
+            # ---------------------------
+            prompt = f"""
 You are CU InfoBot, an AI assistant for Chandigarh University.
 
 Instructions:
 
 - Answer ONLY from the provided context.
 - Do NOT make up information.
-- If the answer is unavailable, reply exactly:
+- If the answer cannot be found, reply exactly:
 
 I could not find this information in the available university documents.
 
@@ -378,19 +344,19 @@ Question:
 Answer:
 """
 
-    # ---------------------------
-    # Generate answer
-    # ---------------------------
-    response = llm.invoke(prompt)
-    answer = response.content
+            # ---------------------------
+            # Generate answer
+            # ---------------------------
+            response = llm.invoke(prompt)
+            answer = response.content
 
-    # ---------------------------
-    # Show Answer
-    # ---------------------------
-    st.subheader("Answer")
+            # ---------------------------
+            # Show Answer
+            # ---------------------------
+            st.subheader("Answer")
 
-    st.markdown(
-        f"""
+            st.markdown(
+                f"""
 <div class="answer-box">
 
 <h4>Answer</h4>
@@ -399,31 +365,37 @@ Answer:
 
 </div>
 """,
-        unsafe_allow_html=True,
-    )
+                unsafe_allow_html=True,
+            )
 
-    # ---------------------------
-    # Retrieved Chunks
-    # ---------------------------
-    with st.expander("📄 Retrieved Chunks Used for This Answer", expanded=True):
+            # ---------------------------
+            # Retrieved Chunks
+            # ---------------------------
+            with st.expander("📄 Retrieved Document Chunks", expanded=False):
 
-        for i, doc in enumerate(question_docs, start=1):
+                if len(question_docs) == 0:
 
-            source = doc.metadata.get("source", "Unknown")
-            category = doc.metadata.get("category", "Unknown")
-            page = doc.metadata.get("page", "N/A")
+                    st.warning("No relevant document chunks were found.")
 
-            st.markdown(
-                f"""
+                else:
+
+                    for i, doc in enumerate(question_docs, start=1):
+
+                        source = doc.metadata.get("source", "Unknown")
+                        page = doc.metadata.get("page", "N/A")
+                        category = doc.metadata.get("category", "Unknown")
+
+                        st.markdown(
+                            f"""
 <div class="chunk-box">
 
 <h3>Chunk {i}</h3>
 
-<p><b>📂 Category:</b> {category}</p>
+<p><b>Category:</b> {category}</p>
 
-<p><b>📄 Source:</b> {source}</p>
+<p><b>Source:</b> {source}</p>
 
-<p><b>📑 Page:</b> {page}</p>
+<p><b>Page:</b> {page}</p>
 
 <hr>
 
@@ -431,13 +403,12 @@ Answer:
 
 </div>
 """,
-                unsafe_allow_html=True,
-            )
+                            unsafe_allow_html=True,
+                        )
 
-except Exception as e:
+        except Exception as e:
 
-    st.error(f"Error: {e}")
-    st.stop()
+            st.error(f"Error: {e}")
 
 
 # ---------------------------
