@@ -232,7 +232,7 @@ with st.sidebar:
             "Hostel",
             "Examination Rules",
             "Academic Calendar",
-            "Course Syllabi",
+            "Course Syllabus",
             "Notices"
         ],
         icons=[
