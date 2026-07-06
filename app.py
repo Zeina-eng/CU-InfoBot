@@ -208,6 +208,14 @@ def load_db():
     )
 
 db = load_db()
+ # ---------------------------
+# Load LLM
+# ---------------------------
+llm = ChatGroq(
+    api_key=st.secrets["GROQ_API_KEY"],
+    model="llama-3.1-8b-instant",
+    temperature=0
+)
 
 # -------------------------------------------------
 # Sidebar - Document Browser (Independent)
@@ -238,60 +246,12 @@ with st.sidebar:
         default_index=0
     )
 
-# -------------------------------------------------
-# Show selected document (Independent of chatbot)
-# -------------------------------------------------
-
-st.markdown("---")
-st.subheader(f"📄 {selected_category}")
-
-category_docs = db.similarity_search(
-    selected_category,
-    k=5
-)
-
-with st.expander("📚 Document Chunks", expanded=False):
-
-    for i, doc in enumerate(category_docs, start=1):
-
-        source = doc.metadata.get("source", "Unknown")
-        page = doc.metadata.get("page", "N/A")
-        category = doc.metadata.get("category", "Unknown")
-
-        st.markdown(
-            f"""
-<div class="chunk-box">
-
-<h3>Chunk {i}</h3>
-
-<p><b>Category:</b> {category}</p>
-
-<p><b>Source:</b> {source}</p>
-
-<p><b>Page:</b> {page}</p>
-
-<hr>
-
-<p>{doc.page_content}</p>
-
-</div>
-""",
-            unsafe_allow_html=True
-        )
-
-llm = ChatGroq(
-    api_key=st.secrets["GROQ_API_KEY"],
-    model="llama-3.1-8b-instant",
-    temperature=0
-)
-
 # ---------------------------
 # User input
 # ---------------------------
 question = st.text_input(
     "Ask a Chandigarh University Question"
 )
-
 # ---------------------------
 # Process question
 # ---------------------------
@@ -308,6 +268,8 @@ if question:
                 question,
                 k=5
             )
+
+
 
             # ---------------------------
             # Build context
@@ -404,6 +366,48 @@ Answer:
         except Exception as e:
 
             st.error(f"Error: {e}")
+        
+# -------------------------------------------------
+# Show selected document (Independent of chatbot)
+# -------------------------------------------------
+
+st.markdown("---")
+
+st.subheader(f"📄 {selected_category}")
+
+category_docs = db.similarity_search(
+    selected_category,
+    k=5
+)
+
+with st.expander("📚 Document Chunks", expanded=False):
+
+    for i, doc in enumerate(category_docs, start=1):
+
+        source = doc.metadata.get("source", "Unknown")
+        page = doc.metadata.get("page", "N/A")
+        category = doc.metadata.get("category", "Unknown")
+
+        st.markdown(
+            f"""
+<div class="chunk-box">
+
+<h3>Chunk {i}</h3>
+
+<p><b>Category:</b> {category}</p>
+
+<p><b>Source:</b> {source}</p>
+
+<p><b>Page:</b> {page}</p>
+
+<hr>
+
+<p>{doc.page_content}</p>
+
+</div>
+""",
+            unsafe_allow_html=True,
+        )
 
 
 # ---------------------------
