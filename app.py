@@ -121,9 +121,10 @@ label {{
 
     color: black !important;
 }}
+
 /* Document Browser */
 
-.document-browser {
+.document-browser {{
 
     background: rgba(255,255,255,0.98);
 
@@ -137,71 +138,72 @@ label {{
 
     box-shadow: 0 8px 20px rgba(0,0,0,0.35);
 
-}
+}}
 
 /* Title */
 
-.document-browser h2{
+.document-browser h2 {{
 
-    color:#6A1B9A !important;
+    color: #6A1B9A !important;
 
-    font-size:30px;
+    font-size: 30px;
 
-    font-weight:bold;
+    font-weight: bold;
 
-}
+}}
 
 /* Subtitle */
 
-.document-browser p{
+.document-browser p {{
 
-    color:#222 !important;
+    color: #222 !important;
 
-    font-size:17px;
+    font-size: 17px;
 
-    line-height:1.7;
+    line-height: 1.7;
 
-}
+}}
 
 /* Document cards */
 
-.document-browser .chunk-box{
+.document-browser .chunk-box {{
 
-    background:#ffffff;
+    background: #ffffff;
 
-    border:1px solid #dddddd;
+    border: 1px solid #dddddd;
 
-    border-radius:12px;
+    border-radius: 12px;
 
-    padding:20px;
+    padding: 20px;
 
-    margin-bottom:20px;
+    margin-bottom: 20px;
 
-}
+}}
 
 /* Card headings */
 
-.document-browser .chunk-box h3{
+.document-browser .chunk-box h3 {{
 
-    color:#6A1B9A !important;
+    color: #6A1B9A !important;
 
-    font-size:22px;
+    font-size: 22px;
 
-    font-weight:bold;
+    font-weight: bold;
 
-}
+}}
 
 /* Card text */
 
-.document-browser .chunk-box p{
+.document-browser .chunk-box p {{
 
-    color:#111 !important;
+    color: #111 !important;
 
-    font-size:17px;
+    font-size: 17px;
 
-    line-height:1.8;
+    line-height: 1.8;
 
-}
+}}
+
 
 /* Sidebar */
 
