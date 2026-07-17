@@ -121,6 +121,43 @@ label {{
 
     color: black !important;
 }}
+/* Document Browser */
+
+.document-browser {
+
+    background: rgba(255,255,255,0.96);
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    margin-top: 20px;
+
+    margin-bottom: 20px;
+
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+
+}
+
+.document-browser * {
+
+    color: #222 !important;
+
+}
+
+.document-browser h2 {
+
+    color: #6A1B9A !important;
+
+    font-weight: bold;
+
+}
+
+.document-browser h3 {
+
+    color: #6A1B9A !important;
+
+}
 
 /* Sidebar */
 
@@ -232,7 +269,11 @@ with st.sidebar:
             "Hostel",
             "Examination Rules",
             "Academic Calendar",
-            "Course Syllabus",
+            "Course Syllabus
+ 
+            
+            "
+            "",
             "Notices"
         ],
         icons=[
