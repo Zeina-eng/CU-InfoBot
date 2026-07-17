@@ -270,11 +270,7 @@ with st.sidebar:
             "Examination Rules",
             "Academic Calendar",
             "Course Syllabus",
- 
-            
-            "
-            "",
-            "Notices"
+            "Notices",
         ],
         icons=[
             "file-earmark-text",
