@@ -456,23 +456,31 @@ Answer:
 
 st.markdown("---")
 
-st.subheader(f"📄 {selected_category}")
+st.markdown(
+    f"""
+<div class="document-browser">
+
+<h2>📄 {selected_category}</h2>
+
+<p><b>Document Chunks</b></p>
+
+""",
+    unsafe_allow_html=True,
+)
 
 category_docs = db.similarity_search(
     selected_category,
     k=5
 )
 
-with st.expander("📚 Document Chunks", expanded=False):
+for i, doc in enumerate(category_docs, start=1):
 
-    for i, doc in enumerate(category_docs, start=1):
+    source = doc.metadata.get("source", "Unknown")
+    page = doc.metadata.get("page", "N/A")
+    category = doc.metadata.get("category", "Unknown")
 
-        source = doc.metadata.get("source", "Unknown")
-        page = doc.metadata.get("page", "N/A")
-        category = doc.metadata.get("category", "Unknown")
-
-        st.markdown(
-            f"""
+    st.markdown(
+        f"""
 <div class="chunk-box">
 
 <h3>Chunk {i}</h3>
@@ -489,9 +497,13 @@ with st.expander("📚 Document Chunks", expanded=False):
 
 </div>
 """,
-            unsafe_allow_html=True,
-        )
+        unsafe_allow_html=True,
+    )
 
+st.markdown(
+    "</div>",
+    unsafe_allow_html=True,
+)
 
 # ---------------------------
 # FOOTER
