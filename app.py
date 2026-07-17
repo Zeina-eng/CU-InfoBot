@@ -125,7 +125,7 @@ label {{
 
 .document-browser {
 
-    background: rgba(255,255,255,0.96);
+    background: rgba(255,255,255,0.98);
 
     padding: 25px;
 
@@ -135,27 +135,71 @@ label {{
 
     margin-bottom: 20px;
 
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35);
 
 }
 
-.document-browser * {
+/* Title */
 
-    color: #222 !important;
+.document-browser h2{
 
-}
+    color:#6A1B9A !important;
 
-.document-browser h2 {
+    font-size:30px;
 
-    color: #6A1B9A !important;
-
-    font-weight: bold;
+    font-weight:bold;
 
 }
 
-.document-browser h3 {
+/* Subtitle */
 
-    color: #6A1B9A !important;
+.document-browser p{
+
+    color:#222 !important;
+
+    font-size:17px;
+
+    line-height:1.7;
+
+}
+
+/* Document cards */
+
+.document-browser .chunk-box{
+
+    background:#ffffff;
+
+    border:1px solid #dddddd;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    margin-bottom:20px;
+
+}
+
+/* Card headings */
+
+.document-browser .chunk-box h3{
+
+    color:#6A1B9A !important;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+}
+
+/* Card text */
+
+.document-browser .chunk-box p{
+
+    color:#111 !important;
+
+    font-size:17px;
+
+    line-height:1.8;
 
 }
 
