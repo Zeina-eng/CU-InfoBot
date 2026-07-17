@@ -269,7 +269,7 @@ with st.sidebar:
             "Hostel",
             "Examination Rules",
             "Academic Calendar",
-            "Course Syllabus
+            "Course Syllabus",
  
             
             "
