@@ -295,8 +295,8 @@ db = load_db()
 # Load LLM
 # ---------------------------
 llm = ChatGroq(
-    api_key=st.secrets["GROQ_API_KEY"],
-    model="llama-3.1-8b-instant",
+    api_key=os.getenv("GROQ_API_KEY"),
+    model="openai/gpt-oss-20b",
     temperature=0
 )
 
